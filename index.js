@@ -3004,10 +3004,10 @@
     return Z.concat(xs, Z.of(xs.constructor, x));
   }
   S.append =
-    def('append',
-        {f: [Z.Applicative, Z.Semigroup]},
-        [a, f(a), f(a)],
-        append);
+  def('append',
+      {f: [Z.Applicative, Z.Semigroup]},
+      [a, f(a), f(a)],
+      append);
 
   //# prepend :: (Applicative f, Semigroup (f a)) => a -> f a -> f a
   //.
