@@ -1004,12 +1004,6 @@
   //. ```javascript
   //. > S.filter(S.odd, [1, 2, 3, 4, 5])
   //. [1, 3, 5]
-  //.
-  //. > S.filter(S.odd, S.Just(9))
-  //. Just(9)
-  //.
-  //. > S.filter(S.odd, S.Just(4))
-  //. Nothing
   //. ```
   S.filter =
   def('filter',
@@ -1026,12 +1020,6 @@
   //. ```javascript
   //. > S.filterM(S.odd, [1, 2, 3, 4, 5])
   //. [1, 3, 5]
-  //.
-  //. > S.filterM(S.odd, S.Just(9))
-  //. Just(9)
-  //.
-  //. > S.filterM(S.odd, S.Just(4))
-  //. Nothing
   //. ```
   S.filterM =
   def('filterM',
@@ -1319,6 +1307,12 @@
     this.isNothing = tag === 'Nothing';
     this.isJust = tag === 'Just';
     if (this.isJust) this.value = value;
+
+    //  Add "fantasy-land/concat" method conditionally so that Just('abc')
+    //  satisfies the requirements of Semigroup but Just(123) does not.
+    if (this.isNothing || Z.Semigroup.test(this.value)) {
+      this['fantasy-land/concat'] = Maybe$prototype$concat;
+    }
   }
 
   //# Nothing :: Maybe a
@@ -1488,11 +1482,11 @@
   //. > S.concat(S.Just([1, 2, 3]), S.Nothing)
   //. Just([1, 2, 3])
   //. ```
-  Maybe.prototype['fantasy-land/concat'] = function(other) {
+  function Maybe$prototype$concat(other) {
     return this.isNothing ?
       other :
       other.isNothing ? this : Just(Z.concat(this.value, other.value));
-  };
+  }
 
   //# Maybe#fantasy-land/map :: Maybe a ~> (a -> b) -> Maybe b
   //.
@@ -1941,6 +1935,13 @@
     this.isLeft = tag === 'Left';
     this.isRight = tag === 'Right';
     this.value = value;
+
+    //  Add "fantasy-land/concat" method conditionally so that Left('abc')
+    //  and Right('abc') satisfy the requirements of Semigroup but Left(123)
+    //  and Right(123) do not.
+    if (Z.Semigroup.test(this.value)) {
+      this['fantasy-land/concat'] = Either$prototype$concat;
+    }
   }
 
   //# Left :: a -> Either a b
@@ -2089,11 +2090,11 @@
   //. > S.concat(S.Right([1, 2, 3]), S.Left('abc'))
   //. Right([1, 2, 3])
   //. ```
-  Either.prototype['fantasy-land/concat'] = function(other) {
+  function Either$prototype$concat(other) {
     return this.isLeft ?
       other.isLeft ? Left(Z.concat(this.value, other.value)) : other :
       other.isLeft ? this : Right(Z.concat(this.value, other.value));
-  };
+  }
 
   //# Either#fantasy-land/map :: Either a b ~> (b -> c) -> Either a c
   //.
