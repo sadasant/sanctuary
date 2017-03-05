@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "sanctuary-def": "0.9.0",
+    "sanctuary-either": "sanctuary-js/sanctuary-either#davidchambers/everything",
+    "sanctuary-maybe": "sanctuary-js/sanctuary-maybe#svozza/everything",
     "sanctuary-type-classes": "3.0.1",
     "sanctuary-type-identifiers": "1.0.0"
   },
